@@ -1,9 +1,13 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import { Button } from "antd";
-import { ProForm, ProFormText } from "@ant-design/pro-components";
+import {getQuestionVoByIdUsingGet} from "@/api/questionController";
 
 export default function Home() {
+
+    getQuestionVoByIdUsingGet({}).then(res => {
+        console.log(res)
+    })
     return (
         <main className={styles.main}>
             <Button type="primary">题目</Button>

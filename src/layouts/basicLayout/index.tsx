@@ -2,22 +2,27 @@
 import { GithubFilled, LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { ProConfigProvider, ProLayout } from "@ant-design/pro-components";
 import { ConfigProvider, Dropdown } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import SearchInput from "@/layouts/basicLayout/components/SearchInput";
 import Link from "next/link";
 import GlobalFooter from "@/components/GlobalFooter";
 import "./index.css";
 import {menus} from "../../../config/menu";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
+import {useSelector} from "react-redux";
+import {RootState} from "@/stores";
 interface Props {
   children: React.ReactNode;
 }
 
 export default function BasicLayout({ children }: Props) {
   const router = useRouter();
-  const [pathname, setPathname] = useState("/list/sub-page/sub-sub-page1");
-  const [num, setNum] = useState(40);
+  const pathname = usePathname();
+  const loginUser = useSelector((state: RootState) => state.loginUser);
+
+
+
   return (
     <div
       id="test-pro-layout"
@@ -49,9 +54,10 @@ export default function BasicLayout({ children }: Props) {
             }}
             siderMenuType="group"
             avatarProps={{
-              title: "乐未殇",
-              src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
-              size: "small",
+              title: loginUser.userName || "未登录",
+              // src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
+              src: loginUser.userAvatar || "/assets/logo.png",
+              // size: "small",
               render: (props, dom) => {
                 return (
                   <Dropdown
@@ -71,7 +77,7 @@ export default function BasicLayout({ children }: Props) {
                       onClick: async (event: { key: React.Key }) => {
                         const { key } = event;
                         if (key === "logout") {
-                          userLogout();
+                          // userLogout();
                         } else if (key === "userCenter") {
                           router.push("/user/center");
                         }
