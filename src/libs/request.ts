@@ -1,4 +1,5 @@
 import axios from "axios";
+import { message } from "antd";
 
 // 创建 Axios 示例
 const myAxios = axios.create({
@@ -43,6 +44,10 @@ myAxios.interceptors.response.use(
   // 非 2xx 响应触发
   function (error) {
     // 处理响应错误
+    if (error.code === "ERR_NETWORK") {
+      message.error("网络错误");
+      return;
+    }
     return Promise.reject(error);
   },
 );

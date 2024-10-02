@@ -12,6 +12,7 @@ import {menus} from "../../../config/menu";
 import {usePathname, useRouter} from "next/navigation";
 import {useSelector} from "react-redux";
 import {RootState} from "@/stores";
+import getAccessibleMenus from "@/access/menuAccess";
 interface Props {
   children: React.ReactNode;
 }
@@ -113,7 +114,7 @@ export default function BasicLayout({ children }: Props) {
             onMenuHeaderClick={(e) => console.log(e)}
             // 定义有哪些菜单
             menuDataRender={() => {
-              return menus
+              return getAccessibleMenus(loginUser, menus);
             }}
             // 定义了菜单项如何渲染
             menuItemRender={(item, dom) => (

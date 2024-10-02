@@ -8,6 +8,7 @@ import {getLoginUserUsingGet} from "@/api/userController";
 import {Provider, useDispatch} from "react-redux";
 import store, { AppDispatch } from "@/stores";
 import {setLoginUser} from "@/stores/loginUser";
+import AccessLayout from "@/access/AccessLayout";
 
 
 /**
@@ -25,7 +26,7 @@ const InitLayout: React.FC<
     const doInitLoginUser = useCallback(async () => {
         const res = await getLoginUserUsingGet();
         // const  res = {}
-        if (res.data) {
+        if (res != null && res.data != null) {
             // 更新全局用户状态
             dispatch(setLoginUser(res.data));
         } else {
@@ -38,7 +39,7 @@ const InitLayout: React.FC<
             //     userRole: ACCESS_ENUM.ADMIN
             //   };
             //   dispatch(setLoginUser(testUser));
-            // }, 3000);
+            // }, 2000);
         }
     }, []);
 
@@ -61,7 +62,9 @@ export default function RootLayout({
             <Provider store={store}>
                 <InitLayout>
                     <BasicLayout>
-                        {children}
+                        <AccessLayout>
+                            {children}
+                        </AccessLayout>
                     </BasicLayout>
                 </InitLayout>
             </Provider>
