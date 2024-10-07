@@ -503,23 +503,19 @@ declare namespace API {
   };
 
   type QuestionBankQuestionAddRequest = {
-    content?: string;
     questionBankId?: number;
-    tags?: string[];
-    title?: string;
+    questionId?: number;
   };
 
   type QuestionBankQuestionQueryRequest = {
-    content?: string;
     current?: number;
     id?: number;
     notId?: number;
     pageSize?: number;
-    searchText?: string;
+    questionBankId?: number;
+    questionId?: number;
     sortField?: string;
     sortOrder?: string;
-    tags?: string[];
-    title?: string;
     userId?: number;
   };
 
@@ -563,7 +559,7 @@ declare namespace API {
     description?: string;
     id?: number;
     picture?: string;
-    questionPage?: PageQuestion_;
+    questionPage?: PageQuestionVO_;
     title?: string;
     updateTime?: string;
     user?: UserVO;

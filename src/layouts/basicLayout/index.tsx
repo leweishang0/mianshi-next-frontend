@@ -1,18 +1,22 @@
 "use client";
 import { GithubFilled, LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import { ProConfigProvider, ProLayout } from "@ant-design/pro-components";
-import { ConfigProvider, Dropdown } from "antd";
+import { ProLayout } from "@ant-design/pro-components";
+import { Dropdown, message } from "antd";
 import React from "react";
 import Image from "next/image";
 import SearchInput from "@/layouts/basicLayout/components/SearchInput";
 import Link from "next/link";
 import GlobalFooter from "@/components/GlobalFooter";
 import "./index.css";
-import {menus} from "../../../config/menu";
-import {usePathname, useRouter} from "next/navigation";
-import {useSelector} from "react-redux";
-import {RootState} from "@/stores";
+import { menus } from "../../../config/menu";
+import { usePathname, useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/stores";
 import getAccessibleMenus from "@/access/menuAccess";
+import { userLogoutUsingPost } from "@/api/userController";
+import { setLoginUser } from "@/stores/loginUser";
+import { DEFAULT_USER } from "@/constants/user";
+
 interface Props {
   children: React.ReactNode;
 }
@@ -21,116 +25,129 @@ export default function BasicLayout({ children }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const loginUser = useSelector((state: RootState) => state.loginUser);
+  const dispatch = useDispatch<AppDispatch>();
 
-
+  /**
+   * 用户注销
+   */
+  const userLogout = async () => {
+    try {
+      await userLogoutUsingPost();
+      message.success("已退出登录");
+      dispatch(setLoginUser(DEFAULT_USER));
+      router.push("/user/login");
+    } catch (e) {
+      message.error("操作失败，" + e.message);
+    }
+  };
 
   return (
     <div
-      id="test-pro-layout"
+      id="basicLayout"
       style={{
         height: "100vh",
         overflow: "auto",
       }}
     >
-      <ProConfigProvider hashed={false}>
-        <ConfigProvider
-          getTargetContainer={() => {
-            return document.getElementById("test-pro-layout") || document.body;
-          }}
-        >
-          <ProLayout
-            layout={"top"}
-            title={"面试刷题网站"}
-            logo={
-              <Image
-                src="/assets/logo.png"
-                width={40}
-                height={40}
-                alt={"面试刷题网站"}
-              ></Image>
-            }
-            prefixCls="my-prefix"
-            location={{
-              pathname,
-            }}
-            siderMenuType="group"
-            avatarProps={{
-              title: loginUser.userName || "未登录",
-              // src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
-              src: loginUser.userAvatar || "/assets/logo.png",
-              // size: "small",
-              render: (props, dom) => {
-                return (
-                  <Dropdown
-                    menu={{
-                      items: [
-                        {
-                          key: "userCenter",
-                          icon: <UserOutlined />,
-                          label: "个人中心",
-                        },
-                        {
-                          key: "logout",
-                          icon: <LogoutOutlined />,
-                          label: "退出登录",
-                        },
-                      ],
-                      onClick: async (event: { key: React.Key }) => {
-                        const { key } = event;
-                        if (key === "logout") {
-                          // userLogout();
-                        } else if (key === "userCenter") {
-                          router.push("/user/center");
-                        }
-                      },
-                    }}
-                  >
-                    {dom}
-                  </Dropdown>
-                );
-              },
-            }}
-            actionsRender={(props) => {
-              if (props.isMobile) return [];
-              return [
-                <SearchInput key="search" />,
-                <a
-                  key="github"
-                  href="https://github.com/leweishang0/mianshi-next-frontend"
-                  target="_blank"
-                >
-                  <GithubFilled key="GithubFilled" />
-                </a>,
-              ];
-            }}
-            headerTitleRender={(logo, title, _) => {
+      <ProLayout
+        title="面试刷题平台"
+        layout="top"
+        logo={
+          <Image
+            src="/assets/logo.png"
+            height={32}
+            width={32}
+            alt="面试刷题网站"
+          />
+        }
+        location={{
+          pathname,
+        }}
+        avatarProps={{
+          src: loginUser.userAvatar || "/assets/logo.png",
+          // size: "small",
+          title: loginUser.userName || "",
+          render: (props, dom) => {
+            if (!loginUser.id) {
               return (
-                <a>
-                  {logo}
-                  {title}
-                </a>
+                <div
+                  onClick={() => {
+                    router.push("/user/login");
+                  }}
+                >
+                  {dom}
+                </div>
               );
-            }}
-            onMenuHeaderClick={(e) => console.log(e)}
-            // 定义有哪些菜单
-            menuDataRender={() => {
-              return getAccessibleMenus(loginUser, menus);
-            }}
-            // 定义了菜单项如何渲染
-            menuItemRender={(item, dom) => (
-              <Link href={item.path || "/"} target={item.target}>
+            }
+            return (
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: "userCenter",
+                      icon: <UserOutlined />,
+                      label: "个人中心",
+                    },
+                    {
+                      key: "logout",
+                      icon: <LogoutOutlined />,
+                      label: "退出登录",
+                    },
+                  ],
+                  onClick: async (event: { key: React.Key }) => {
+                    const { key } = event;
+                    if (key === "logout") {
+                      userLogout();
+                    } else if (key === "userCenter") {
+                      router.push("/user/center");
+                    }
+                  },
+                }}
+              >
                 {dom}
-              </Link>
-            )}
-              // 渲染底部栏
-            footerRender={() => {
-              return <GlobalFooter />;
-            }}
-          >
-            {children}
-          </ProLayout>
-        </ConfigProvider>
-      </ProConfigProvider>
+              </Dropdown>
+            );
+          },
+        }}
+        actionsRender={(props) => {
+          if (props.isMobile) return [];
+          return [
+            <SearchInput key="search" />,
+            <a
+              key="github"
+              href="https://github.com/leweishang0/mianshi-next-frontend"
+              target="_blank"
+            >
+              <GithubFilled key="GithubFilled" />
+            </a>,
+          ];
+        }}
+        headerTitleRender={(logo, title, _) => {
+          return (
+            <a>
+              {logo}
+              {title}
+            </a>
+          );
+        }}
+        // 渲染底部栏
+        footerRender={() => {
+          return <GlobalFooter />;
+        }}
+        onMenuHeaderClick={(e) => console.log(e)}
+        // 定义有哪些菜单
+        menuDataRender={() => {
+          return getAccessibleMenus(loginUser, menus);
+        }}
+        // 定义了菜单项如何渲染
+        menuItemRender={(item, dom) => (
+          <Link href={item.path || "/"} target={item.target}>
+            {dom}
+          </Link>
+        )}
+      >
+        {children}
+      </ProLayout>
     </div>
   );
 }

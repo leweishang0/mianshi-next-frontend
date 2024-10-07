@@ -7,14 +7,17 @@ export const menus = [
   {
     path: "/",
     name: "主页",
+    title: "主页",
   },
   {
     path: "/banks",
     name: "题库",
+    title: "题库",
   },
   {
     path: "/questions",
     name: "题目",
+    title: "题目",
   },
   {
     path: "/admin",
@@ -26,16 +29,19 @@ export const menus = [
         path: "/admin/user",
         name: "用户管理",
         access: ACCESS_ENUM.ADMIN,
+        title: "用户管理"
       },
       {
         path: "/admin/bank",
         name: "题库管理",
         access: ACCESS_ENUM.ADMIN,
+        title: "题库管理"
       },
       {
         path: "/admin/question",
         name: "题目管理",
         access: ACCESS_ENUM.ADMIN,
+        title: "题目管理"
       },
     ],
   },
