@@ -1,5 +1,5 @@
 "use client";
-import {listQuestionVoByPageUsingPost} from "@/api/questionController";
+import {listQuestionVoByPageUsingPost, searchQuestionVoByPageUsingPost} from "@/api/questionController";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable } from "@ant-design/pro-components";
 import React, { useRef, useState } from "react";
@@ -98,7 +98,7 @@ const QuestionTable: React.FC = (props: Props) => {
               const sortField = Object.keys(sort)?.[0] || "createTime";
               const sortOrder = sort?.[sortField] || "descend";
 
-              const { data, code } = await listQuestionVoByPageUsingPost({
+              const { data, code } = await searchQuestionVoByPageUsingPost({
                 ...params,
                 sortField,
                 sortOrder,
