@@ -6,11 +6,11 @@ import {
   deleteQuestionUsingPost,
   listQuestionByPageUsingPost,
 } from "@/api/questionController";
-import { PlusOutlined } from "@ant-design/icons";
-import type { ActionType, ProColumns } from "@ant-design/pro-components";
-import { PageContainer, ProTable } from "@ant-design/pro-components";
-import { Button, message, Popconfirm, Space, Table, Typography } from "antd";
-import React, { useRef, useState } from "react";
+import {PlusOutlined} from "@ant-design/icons";
+import type {ActionType, ProColumns} from "@ant-design/pro-components";
+import {PageContainer, ProTable} from "@ant-design/pro-components";
+import {Button, message, Popconfirm, Space, Table, Typography} from "antd";
+import React, {useRef, useState} from "react";
 import TagList from "@/components/TagList";
 import MdEditor from "@/components/MdEditor";
 import UpdateBankModal from "@/app/admin/question/components/UpdateBankModal";
@@ -117,7 +117,6 @@ const QuestionAdminPage: React.FC = () => {
       dataIndex: "content",
       valueType: "text",
       hideInSearch: true,
-      width: 240,
       renderFormItem: (item, { fieldProps }, form) => {
         // 编写要渲染的表单项
         // value 和 onchange 会通过 form 自动注入
@@ -131,7 +130,6 @@ const QuestionAdminPage: React.FC = () => {
       hideInSearch: true,
       // ellipsis: true,
       // textWrap: 'word-break',
-      width: 120,
       renderFormItem: (item, { fieldProps }, form) => {
         // 编写要渲染的表单项
         // value 和 onchange 会通过 form 自动注入
@@ -186,14 +184,14 @@ const QuestionAdminPage: React.FC = () => {
       dataIndex: "option",
       valueType: "option",
       render: (_, record) => (
-        <Space size="middle">
+        <Space size={[2, 12]} wrap>
           <Typography.Link
             onClick={() => {
               setCurrentRow(record);
               setUpdateModalVisible(true);
             }}
           >
-            修改
+            <Button size={"small"}>修改</Button>
           </Typography.Link>
           <Typography.Link
             onClick={() => {
@@ -201,11 +199,22 @@ const QuestionAdminPage: React.FC = () => {
               setUpdateBankModalVisible(true);
             }}
           >
-            修改所属题库
+            <Button size={"small"}>修改所属题库</Button>
           </Typography.Link>
-          <Typography.Link type="danger" onClick={() => handleDelete(record)}>
-            删除
-          </Typography.Link>
+          <Popconfirm
+            title="提示"
+            description="    是否确定删除?    "
+            onConfirm={() => handleDelete(record)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button size={"small"} danger>
+              删除
+            </Button>
+          </Popconfirm>
+          {/*<Typography.Link type="danger" onClick={() => handleDelete(record)}>*/}
+          {/*  删除*/}
+          {/*</Typography.Link>*/}
         </Space>
       ),
     },
@@ -254,19 +263,29 @@ const QuestionAdminPage: React.FC = () => {
           return (
             <Space size={16}>
               <Button
-                onClick={() => {
-                  // 打开弹窗
-                  setSelectedQuestionIdList(selectedRowKeys as number[]);
-                  setBatchAddQuestionsToBankModalVisible(true);
+                  onClick={() => {
+                  if (selectedRowKeys.length == 0){
+                    message.info("请先选择题目");
+                  }else {
+                    // 打开弹窗
+                    setSelectedQuestionIdList(selectedRowKeys as number[]);
+                    setBatchAddQuestionsToBankModalVisible(true);
+                  }
+
                 }}
               >
                 批量向题库添加题目
               </Button>
               <Button
-                onClick={() => {
-                  // 打开弹窗
-                  setSelectedQuestionIdList(selectedRowKeys as number[]);
-                  setBatchRemoveQuestionsFromBankModalVisible(true);
+                  disabled={selectedRowKeys.length === 0}
+                  onClick={() => {
+                  if (selectedRowKeys.length == 0){
+                    message.info("请先选择题目");
+                  }else {
+                    // 打开弹窗
+                    setSelectedQuestionIdList(selectedRowKeys as number[]);
+                    setBatchRemoveQuestionsFromBankModalVisible(true);
+                  }
                 }}
               >
                 批量从题库移除题目
