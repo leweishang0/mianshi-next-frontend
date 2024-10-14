@@ -64,6 +64,9 @@ export default function BasicLayout({ children }: Props) {
           pathname,
         }}
         avatarProps={{
+          style: {
+            marginRight: "10px",
+          },
           src: loginUser.userAvatar || "/assets/logo.png",
           // size: "small",
           title: loginUser.userName || "",
